@@ -9,7 +9,7 @@
 2. Search for `@BotFather`
 3. Send: `/newbot`
 4. Follow instructions
-5. **Copy the token** (looks like: `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
+5. **Copy the token** (looks like: `token`)
 
 **Get Your Chat ID:**
 1. Start chat with your bot (send any message)
@@ -24,7 +24,7 @@
 **Update config.json:**
 ```json
 {
-  "token": "MTM2NzI3Njk4MzQ2NTAyMTU2MQ.GhLNw6.wJDfleAnk9VNr7c54OOFNAW38bOFkkP9zv5CPU",
+  "token": "token",
   "testMode": false,
   "telegram": {
     "botToken": "PASTE_YOUR_BOT_TOKEN_HERE",
