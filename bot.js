@@ -1,11 +1,15 @@
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const config = require('./config.json');
+const GamificationSystem = require('./gamification');
 
 // Initialize Discord client
 let client = null;
 let isRunning = false;
 let startTime = null;
 let broadcastUpdate = null;
+
+// Initialize gamification system
+const gamification = new GamificationSystem();
 
 // Data structures to track voice channel activity
 const voiceTimeTracking = new Map(); // userId -> { joinTime, totalTime }
@@ -159,6 +163,18 @@ function handleUserJoinVoice(userId, channelId, guildId) {
         emitLog('info', `High load: ${currentUsers} active users`);
     }
     
+    // Get member for username
+    const guild = client.guilds.cache.get(guildId);
+    const member = guild?.members.cache.get(userId);
+    const username = member?.user.tag || 'Unknown User';
+    
+    // Gamification: Handle user join
+    const joinResult = gamification.handleUserJoin(userId, username);
+    
+    if (joinResult.newStreak > 1) {
+        console.log(`🔥 ${username} has a ${joinResult.newStreak}-day streak!`);
+    }
+    
     if (!voiceTimeTracking.has(userId)) {
         voiceTimeTracking.set(userId, {
             joinTime: Date.now(),
@@ -181,6 +197,37 @@ function handleUserLeaveVoice(userId) {
         
         const totalMinutes = Math.floor(userData.totalTime / 60000);
         console.log(`⏱️  User ${userId} total voice time: ${totalMinutes} minutes`);
+        
+        // Gamification: Handle user leave
+        try {
+            const leaveResult = gamification.handleUserLeave(userId);
+            
+            if (leaveResult) {
+                console.log(`💎 User earned ${leaveResult.xpEarned} XP (${leaveResult.duration} minutes)`);
+                
+                // Level up notification
+                if (leaveResult.leveledUp) {
+                    console.log(`🎉 User leveled up to Level ${leaveResult.newLevel}!`);
+                    emitLog('levelup', `User ${userId} reached Level ${leaveResult.newLevel}`);
+                    
+                    // Check for role rewards
+                    const roleReward = gamification.checkRoleReward(leaveResult.newLevel);
+                    if (roleReward) {
+                        console.log(`🏆 User unlocked role: ${roleReward}`);
+                    }
+                }
+                
+                // Achievement notifications
+                if (leaveResult.unlockedAchievements.length > 0) {
+                    leaveResult.unlockedAchievements.forEach(achievement => {
+                        console.log(`🏅 Achievement Unlocked: ${achievement.name} - ${achievement.description}`);
+                        emitLog('achievement', `User ${userId} unlocked: ${achievement.name}`);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Gamification error:', error);
+        }
     }
 
     clearAFKCheckTimer(userId);

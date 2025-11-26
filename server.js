@@ -2,12 +2,16 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
+const GamificationSystem = require('./gamification');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
 const PORT = 3001;
+
+// Initialize gamification system
+const gamification = new GamificationSystem();
 
 // Middleware
 app.use(express.json());
@@ -136,6 +140,51 @@ app.post('/api/bot/restart', async (req, res) => {
         await botModule.start();
         res.json({ success: true, message: 'Bot restarted successfully' });
         broadcastUpdate();
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// Gamification API Endpoints
+app.get('/api/gamification/profile/:userId', (req, res) => {
+    try {
+        const profile = gamification.getUserProfile(req.params.userId);
+        if (!profile) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        res.json({ success: true, profile });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+app.get('/api/gamification/leaderboards', (req, res) => {
+    try {
+        const leaderboards = gamification.getLeaderboards();
+        res.json({ success: true, leaderboards });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+app.get('/api/gamification/achievements', (req, res) => {
+    try {
+        const achievements = gamification.getAchievements();
+        const achievementList = Object.entries(achievements).map(([key, value]) => ({
+            id: key,
+            name: value.name,
+            description: value.description
+        }));
+        res.json({ success: true, achievements: achievementList });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+app.get('/api/gamification/role-rewards', (req, res) => {
+    try {
+        const rewards = gamification.getRoleRewards();
+        res.json({ success: true, rewards });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
