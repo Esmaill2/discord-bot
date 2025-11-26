@@ -1,0 +1,18 @@
+{
+  "name": "discord-voice-time-tracker",
+  "version": "1.0.0",
+  "description": "Discord bot that tracks voice channel time and checks for AFK users",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "bot-only": "node index.js"
+  },
+  "keywords": ["discord", "bot", "voice", "tracker", "afk", "dashboard"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1"
+  }
+}

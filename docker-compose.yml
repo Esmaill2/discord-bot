@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  discord-bot:
+    build: .
+    container_name: discord-voice-tracker
+    restart: unless-stopped
+    
+    ports:
+      - "3001:3001"
+    
+    volumes:
+      # Mount config file (contains bot token)
+      - ./config.json:/app/config.json:ro
+      # Mount settings file (persists user settings)
+      - ./settings.json:/app/settings.json
+      # Optional: Mount logs directory
+      - ./logs:/app/logs
+    
+    environment:
+      - NODE_ENV=production
+      - TZ=America/New_York  # Set your timezone
+    
+    # Resource limits for 100+ users
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/status', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

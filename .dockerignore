@@ -1,0 +1,29 @@
+# Dependency directories
+node_modules/
+
+# Log files
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+.env.local
+
+# Settings (will be mounted as volume)
+settings.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation (not needed in container)
+*.md
+!README.md
+
+# Test files
+test/
+tests/

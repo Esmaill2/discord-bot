@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Bot Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Discord Voice Tracker Dashboard</h1>
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </header>
+
+        <div class="controls">
+            <button id="startBtn" class="btn btn-success" onclick="startBot()">▶️ Start Bot</button>
+            <button id="stopBtn" class="btn btn-danger" onclick="stopBot()">⏹️ Stop Bot</button>
+            <button id="restartBtn" class="btn btn-warning" onclick="restartBot()">🔄 Restart Bot</button>
+        </div>
+
+        <div class="section settings-section">
+            <h2>⚙️ Time Settings</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label for="afkInterval">AFK Check Interval (minutes):</label>
+                    <div class="input-group">
+                        <input type="number" id="afkInterval" min="1" max="180" value="30">
+                        <span class="input-hint">How often to check if users are AFK</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label for="confirmTimeout">Confirmation Timeout (minutes):</label>
+                    <div class="input-group">
+                        <input type="number" id="confirmTimeout" min="1" max="10" value="2">
+                        <span class="input-hint">Time users have to respond to AFK checks</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+            <span id="saveStatus" class="save-status"></span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-content">
+                    <div class="stat-label">Uptime</div>
+                    <div class="stat-value" id="uptime">0m</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🖥️</div>
+                <div class="stat-content">
+                    <div class="stat-label">Servers</div>
+                    <div class="stat-value" id="servers">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎤</div>
+                <div class="stat-content">
+                    <div class="stat-label">Active Users</div>
+                    <div class="stat-value" id="activeUsers">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-content">
+                    <div class="stat-label">AFK Checks Sent</div>
+                    <div class="stat-value" id="afkChecks">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Active Voice Users</h2>
+            <div class="users-container" id="usersContainer">
+                <div class="no-data">No users in voice channels</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Recent Activity</h2>
+            <div class="activity-log" id="activityLog">
+                <div class="log-entry">
+                    <span class="log-time">--:--:--</span>
+                    <span class="log-message">Waiting for activity...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
